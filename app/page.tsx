@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Instagram, Twitter, Facebook, ChevronRight, Calendar, Mail, MapPin } from "lucide-react"
+import { useRouter } from 'next/navigation';
+import { Instagram, Twitter, Facebook, ChevronRight, Calendar, User, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,6 +12,17 @@ import { AnimatedCounter } from "@/components/animated-counter"
 import { AnimatedText } from "@/components/animated-text"
 import { FancyLogo } from "@/components/fancy-logo"
 import { MobileMenu } from "@/components/mobile-menu"
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+  firstName: yup.string().required('First name is required'),
+  lastName: yup.string().required('Last name is required'),
+  email: yup.string().email('Invalid email').required('Email is required'),
+  subject: yup.string().required('Subject is required'),
+  message: yup.string().required('Message is required'),
+});
 
 export default function Home() {
   const navItems = [
@@ -20,6 +32,24 @@ export default function Home() {
     { title: "Gallery", href: "#gallery" },
     { title: "Contact", href: "#contact" },
   ]
+
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+
+  const onSubmit = (data: any) => {
+    console.log('Form submitted:', data);
+    reset();
+    alert('Message sent successfully!');
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -57,7 +87,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               className="hidden md:block"
             >
-              <Button>Book a Session</Button>
+              <Button  onClick={() => router.push('/#contacts')}>Book a Session</Button>
             </motion.div>
             <MobileMenu items={navItems} />
           </div>
@@ -69,7 +99,7 @@ export default function Home() {
         <section className="relative">
           <div className="absolute inset-0 z-0">
             <Image
-              src="/placeholder-sndt2.png"
+              src="https://assets.skool.com/f/63b0415f99d644b6ba4a55d28db87fa3/6def3f8f0b754fb7a1c1c3bb8a284f477f75efd6c3ef462c97a6b804b439f3fd-md.jpg"
               alt="Baseball training hero image"
               fill
               priority
@@ -106,15 +136,16 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4 pt-4"
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                  <Button size="lg" className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
+                  <Button  onClick={() => router.push('/#contact')} size="lg" className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
                     Book Training Session
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                   <Button
+                    onClick={() => router.push('/#training')}
                     size="lg"
                     variant="outline"
-                    className="text-white border-white hover:bg-white/10 w-full sm:w-auto"
+                    className="text-black border-white w-full sm:w-auto"
                   >
                     View Training Programs
                   </Button>
@@ -129,12 +160,12 @@ export default function Home() {
           <div className="container">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
               <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter from={0} to={500} suffix="+" className="text-2xl md:text-4xl font-bold text-red-600" />
+                <AnimatedCounter from={40} to={100} suffix="+" className="text-2xl md:text-4xl font-bold text-red-600" />
                 <p className="text-xs md:text-sm text-muted-foreground">Players Trained</p>
               </div>
               <div className="space-y-1 md:space-y-2">
                 <AnimatedCounter
-                  from={0}
+                  from={10}
                   to={10}
                   suffix="+"
                   className="text-2xl md:text-4xl font-bold text-red-600"
@@ -144,7 +175,7 @@ export default function Home() {
               </div>
               <div className="space-y-1 md:space-y-2">
                 <AnimatedCounter
-                  from={0}
+                  from={90}
                   to={95}
                   suffix="%"
                   className="text-2xl md:text-4xl font-bold text-red-600"
@@ -153,7 +184,7 @@ export default function Home() {
                 <p className="text-xs md:text-sm text-muted-foreground">Success Rate</p>
               </div>
               <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter from={0} to={24} className="text-2xl md:text-4xl font-bold text-red-600" delay={0.6} />
+                <AnimatedCounter from={20} to={24} className="text-2xl md:text-4xl font-bold text-red-600" delay={0.6} />
                 <p className="text-xs md:text-sm text-muted-foreground">Pro Players Developed</p>
               </div>
             </div>
@@ -231,9 +262,9 @@ export default function Home() {
                     <span className="text-sm md:text-base">College recruitment preparation</span>
                   </motion.li>
                 </ul>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button className="mt-2 md:mt-4">Learn More</Button>
-                </motion.div>
+                </motion.div> */}
               </motion.div>
             </div>
           </div>
@@ -306,11 +337,11 @@ export default function Home() {
                         <span className="text-sm md:text-base">Pitch selection strategy</span>
                       </li>
                     </ul>
-                    <div className="pt-2 md:pt-4">
+                    {/* <div className="pt-2 md:pt-4">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button>Book Pitching Training</Button>
                       </motion.div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               </TabsContent>
@@ -348,11 +379,11 @@ export default function Home() {
                         <span className="text-sm md:text-base">Situational hitting</span>
                       </li>
                     </ul>
-                    <div className="pt-2 md:pt-4">
+                    {/* <div className="pt-2 md:pt-4">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button>Book Hitting Training</Button>
                       </motion.div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               </TabsContent>
@@ -390,11 +421,11 @@ export default function Home() {
                         <span className="text-sm md:text-base">Double play drills</span>
                       </li>
                     </ul>
-                    <div className="pt-2 md:pt-4">
+                    {/* <div className="pt-2 md:pt-4">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button>Book Fielding Training</Button>
                       </motion.div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               </TabsContent>
@@ -432,11 +463,11 @@ export default function Home() {
                         <span className="text-sm md:text-base">Physical conditioning</span>
                       </li>
                     </ul>
-                    <div className="pt-2 md:pt-4">
+                    {/* <div className="pt-2 md:pt-4">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button>Book Complete Training</Button>
                       </motion.div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               </TabsContent>
@@ -622,11 +653,11 @@ export default function Home() {
               </motion.div>
             </div>
 
-            <div className="text-center mt-6 md:mt-8">
+            {/* <div className="text-center mt-6 md:mt-8">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button variant="outline">View More Photos</Button>
               </motion.div>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -653,7 +684,7 @@ export default function Home() {
                 Book your first training session today and start your journey to becoming a better player.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100 w-full sm:w-auto">
+                <Button  onClick={() => router.push('/#contact')} size="lg" className="bg-white text-red-600 hover:bg-gray-100 w-full sm:w-auto">
                   Book Your Training Session
                 </Button>
               </motion.div>
@@ -713,11 +744,11 @@ export default function Home() {
                     className="flex items-center gap-4"
                   >
                     <div className="bg-red-100 p-2 md:p-3 rounded-full">
-                      <Mail className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
+                      <User className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-sm md:text-base">Email</h3>
-                      <p className="text-xs md:text-sm text-muted-foreground">info@stayhotbaseball.com</p>
+                      <h3 className="font-medium text-sm md:text-base">Name</h3>
+                      <p className="text-xs md:text-sm text-muted-foreground">Kevin Saenz</p>
                     </div>
                   </motion.div>
 
@@ -734,7 +765,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-medium text-sm md:text-base">Training Facility</h3>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        123 Baseball Way, Sports City, SC 12345
+                      30803 Ruth ct, Tracy CA
                       </p>
                     </div>
                   </motion.div>
@@ -797,7 +828,7 @@ export default function Home() {
                 className="bg-slate-50 p-4 md:p-8 rounded-lg"
               >
                 <h3 className="text-lg md:text-xl font-bold mb-4">Send us a Message</h3>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -810,10 +841,12 @@ export default function Home() {
                         First Name
                       </label>
                       <input
+                        {...register('firstName')}
                         id="first-name"
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         placeholder="John"
                       />
+                      <p className="text-red-500 text-sm">{errors.firstName?.message}</p>
                     </motion.div>
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -826,10 +859,12 @@ export default function Home() {
                         Last Name
                       </label>
                       <input
+                         {...register('lastName')}
                         id="last-name"
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         placeholder="Doe"
                       />
+                       <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
                     </motion.div>
                   </div>
                   <motion.div
@@ -845,9 +880,11 @@ export default function Home() {
                     <input
                       id="email"
                       type="email"
+                      {...register('email')}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       placeholder="john.doe@example.com"
                     />
+                    <p className="text-red-500 text-sm">{errors.email?.message}</p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -861,9 +898,11 @@ export default function Home() {
                     </label>
                     <input
                       id="subject"
+                      {...register('subject')}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       placeholder="Training Inquiry"
                     />
+                    <p className="text-red-500 text-sm">{errors.subject?.message}</p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -877,12 +916,14 @@ export default function Home() {
                     </label>
                     <textarea
                       id="message"
+                      {...register('message')}
                       className="w-full min-h-[100px] md:min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       placeholder="I'm interested in learning more about your training programs..."
                     />
+                     <p className="text-red-500 text-sm">{errors.message?.message}</p>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                    <Button className="w-full">Send Message</Button>
+                    <Button type="submit" className="w-full">Send Message</Button>
                   </motion.div>
                 </form>
               </motion.div>

@@ -42,8 +42,8 @@ export function MobileMenu({ items }: MobileMenuProps) {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 bg-background pt-16"
           >
-            <div className="container flex flex-col items-center justify-center h-full">
-              <nav className="flex flex-col items-center space-y-8 text-center">
+            <div className="container flexflex-col items-center justify-center h-full">
+              <nav className="flex flex-col items-center space-y-8 text-center bg-white py-2">
                 {items.map((item, i) => (
                   <motion.div
                     key={item.href}
