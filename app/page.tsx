@@ -34,6 +34,14 @@ export default function Home() {
   ]
 
   const router = useRouter();
+  const handleClick = () => {
+    if (typeof window !== 'undefined') {
+      window.open(
+        'https://app.repcard.com/InSaenzTraining',
+        '_blank'
+      );
+    }
+  };
 
   const {
     register,
@@ -87,7 +95,8 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               className="hidden md:block"
             >
-              <Button  onClick={() => router.push('/#contacts')}>Book a Session</Button>
+              <Button onClick={handleClick}>Sign up for team clinic
+              </Button>
             </motion.div>
             <MobileMenu items={navItems} />
           </div>
@@ -126,8 +135,8 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="text-base md:text-lg lg:text-xl"
               >
-                Elite baseball training to help players maintain peak performance. Develop your skills, perfect your
-                technique, and stay hot all season long.
+                Offering international opportunities to play for summer teams in Puerto Rico. Players will receive the full experience with development, housing, meal plans, and the opportunity to compete at a high level.
+                Play against Puerto Rico’s top prospects.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -136,8 +145,12 @@ export default function Home() {
                 className="flex flex-col sm:flex-row gap-4 pt-4"
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                  <Button  onClick={() => router.push('/#contact')} size="lg" className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
-                    Book Training Session
+                  <Button
+                    onClick={handleClick}
+                    size="lg"
+                    className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+                  >
+                    Sign up for team clinic
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
@@ -158,38 +171,23 @@ export default function Home() {
         {/* Stats Section */}
         <section className="py-10 md:py-12 bg-slate-50">
           <div className="container">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
               <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter from={40} to={100} suffix="+" className="text-2xl md:text-4xl font-bold text-red-600" />
-                <p className="text-xs md:text-sm text-muted-foreground">Players Trained</p>
+                <p className="text-3xl md:text-4xl font-bold text-red-600">5,000+</p>
+                <p className="text-sm md:text-base text-muted-foreground">Players Trained</p>
               </div>
               <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter
-                  from={10}
-                  to={10}
-                  suffix="+"
-                  className="text-2xl md:text-4xl font-bold text-red-600"
-                  delay={0.2}
-                />
-                <p className="text-xs md:text-sm text-muted-foreground">Years Experience</p>
+                <p className="text-3xl md:text-4xl font-bold text-red-600">10+ Years</p>
+                <p className="text-sm md:text-base text-muted-foreground">Collegiate / Professional Experience</p>
               </div>
               <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter
-                  from={90}
-                  to={95}
-                  suffix="%"
-                  className="text-2xl md:text-4xl font-bold text-red-600"
-                  delay={0.4}
-                />
-                <p className="text-xs md:text-sm text-muted-foreground">Success Rate</p>
-              </div>
-              <div className="space-y-1 md:space-y-2">
-                <AnimatedCounter from={20} to={24} className="text-2xl md:text-4xl font-bold text-red-600" delay={0.6} />
-                <p className="text-xs md:text-sm text-muted-foreground">Pro Players Developed</p>
+                <p className="text-3xl md:text-4xl font-bold text-red-600">Active Pro</p>
+                <p className="text-sm md:text-base text-muted-foreground">Current Professional Catcher</p>
               </div>
             </div>
           </div>
         </section>
+
 
         {/* About Section */}
         <section id="about" className="py-12 md:py-16 lg:py-24">
@@ -202,8 +200,9 @@ export default function Home() {
                 transition={{ duration: 0.8 }}
                 className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden"
               >
-                <Image src="/placeholder-9h4p8.png" alt="Baseball coach training" fill className="object-cover" />
+                <Image src="/Coach.jpg" alt="Kevin Saenz Jr training baseball players" fill className="object-cover" />
               </motion.div>
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -214,11 +213,9 @@ export default function Home() {
                 <div className="inline-block rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
                   About Your Coach
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">10+ Years of Professional Experience</h2>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Meet Kevin Saenz Jr</h2>
                 <p className="text-muted-foreground text-sm md:text-base">
-                  Former professional player with experience coaching at all levels from youth to college. Specialized
-                  training in pitching, batting, fielding, and game strategy with a proven track record of developing
-                  players who go on to succeed at collegiate and professional levels.
+                  Kevin Saenz Jr is a current active professional catcher with over 10 years of collegiate and professional experience. He has trained more than 5,000 players, helping athletes of all levels sharpen their skills and reach their potential. Kevin brings deep knowledge, passion, and a proven approach to developing elite baseball talent.
                 </p>
                 <ul className="space-y-2">
                   <motion.li
@@ -229,7 +226,7 @@ export default function Home() {
                     className="flex items-center gap-2"
                   >
                     <ChevronRight className="h-4 w-4 text-red-600 flex-shrink-0" />
-                    <span className="text-sm md:text-base">Personalized training plans</span>
+                    <span className="text-sm md:text-base">Personalized training plans tailored to each athlete</span>
                   </motion.li>
                   <motion.li
                     initial={{ opacity: 0, x: 20 }}
@@ -239,7 +236,7 @@ export default function Home() {
                     className="flex items-center gap-2"
                   >
                     <ChevronRight className="h-4 w-4 text-red-600 flex-shrink-0" />
-                    <span className="text-sm md:text-base">Video analysis and feedback</span>
+                    <span className="text-sm md:text-base">In-depth video analysis and real-time feedback</span>
                   </motion.li>
                   <motion.li
                     initial={{ opacity: 0, x: 20 }}
@@ -249,7 +246,7 @@ export default function Home() {
                     className="flex items-center gap-2"
                   >
                     <ChevronRight className="h-4 w-4 text-red-600 flex-shrink-0" />
-                    <span className="text-sm md:text-base">Mental performance coaching</span>
+                    <span className="text-sm md:text-base">Mental performance and mindset coaching</span>
                   </motion.li>
                   <motion.li
                     initial={{ opacity: 0, x: 20 }}
@@ -259,16 +256,14 @@ export default function Home() {
                     className="flex items-center gap-2"
                   >
                     <ChevronRight className="h-4 w-4 text-red-600 flex-shrink-0" />
-                    <span className="text-sm md:text-base">College recruitment preparation</span>
+                    <span className="text-sm md:text-base">College recruitment and advancement guidance</span>
                   </motion.li>
                 </ul>
-                {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="mt-2 md:mt-4">Learn More</Button>
-                </motion.div> */}
               </motion.div>
             </div>
           </div>
         </section>
+
 
         {/* Training Programs */}
         <section id="training" className="py-12 md:py-16 lg:py-24 bg-slate-50">
@@ -311,7 +306,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/placeholder-ovq66.png" alt="Pitching training" fill className="object-cover" />
+                    <Image src="/pitching.jpg" alt="Pitching training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Pitching Mastery</h3>
@@ -353,7 +348,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/placeholder-1ibz1.png" alt="Hitting training" fill className="object-cover" />
+                    <Image src="hitting.jpg" alt="Hitting training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Power Hitting</h3>
@@ -395,7 +390,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/placeholder-36we6.png" alt="Fielding training" fill className="object-cover" />
+                    <Image src="/feilding.jpg" alt="Fielding training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Elite Fielding</h3>
@@ -437,7 +432,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/placeholder-vh4ee.png" alt="Complete training" fill className="object-cover" />
+                    <Image src="complete.jpg" alt="Complete training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Complete Player Development</h3>
@@ -472,6 +467,64 @@ export default function Home() {
                 </motion.div>
               </TabsContent>
             </Tabs>
+          </div>
+        </section>
+
+        {/* Packages Section */}
+        <section className="py-12 md:py-16 bg-slate-50" id="packages">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-2xl mx-auto"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+                Private Training Packages
+              </h2>
+              <p className="text-muted-foreground text-base md:text-lg mb-6">
+                Hour-long private lessons with a trainer. Choose the package that fits your goals and schedule.
+              </p>
+
+              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
+                {[
+                  { hours: 4, price: "$325" },
+                  { hours: 6, price: "$425" },
+                  { hours: 8, price: "$525" },
+                ].map((pkg, index) => (
+                  <motion.div
+                    key={pkg.hours}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.2 }}
+                    className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+                  >
+                    <h3 className="text-xl font-semibold mb-2 text-red-600">
+                      Package of {pkg.hours} Hours
+                    </h3>
+                    <p className="text-gray-700 text-lg font-medium mb-4">
+                      {pkg.price}
+                    </p>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        size="sm"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() =>
+                          window.open(
+                            'https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0',
+                            '_blank'
+                          )
+                        }
+                      >
+                        Book Now
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </section>
 
@@ -678,14 +731,18 @@ export default function Home() {
               className="text-center max-w-3xl mx-auto"
             >
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 md:mb-4">
-                Ready to Transform Your Game?
+                Book a Clinic – $75 per Player
               </h2>
               <p className="text-sm md:text-base mb-6 md:mb-8">
-                Book your first training session today and start your journey to becoming a better player.
+                Hitting, catching, and infield clinic. A high-impact session led by Kevin Saenz Jr focused on elite development and team growth.
               </p>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button  onClick={() => router.push('/#contact')} size="lg" className="bg-white text-red-600 hover:bg-gray-100 w-full sm:w-auto">
-                  Book Your Training Session
+                <Button
+                  onClick={handleClick}
+                  size="lg"
+                  className="bg-white text-red-600 hover:bg-gray-100 w-full sm:w-auto"
+                >
+                  Sign up for team clinic
                 </Button>
               </motion.div>
             </motion.div>
@@ -765,7 +822,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-medium text-sm md:text-base">Training Facility</h3>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                      30803 Ruth ct, Tracy CA
+                        30803 Ruth ct, Tracy CA
                       </p>
                     </div>
                   </motion.div>
@@ -859,12 +916,12 @@ export default function Home() {
                         Last Name
                       </label>
                       <input
-                         {...register('lastName')}
+                        {...register('lastName')}
                         id="last-name"
                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         placeholder="Doe"
                       />
-                       <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
+                      <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
                     </motion.div>
                   </div>
                   <motion.div
@@ -920,7 +977,7 @@ export default function Home() {
                       className="w-full min-h-[100px] md:min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       placeholder="I'm interested in learning more about your training programs..."
                     />
-                     <p className="text-red-500 text-sm">{errors.message?.message}</p>
+                    <p className="text-red-500 text-sm">{errors.message?.message}</p>
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <Button type="submit" className="w-full">Send Message</Button>
