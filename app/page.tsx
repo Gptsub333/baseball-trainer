@@ -15,7 +15,8 @@ import { MobileMenu } from "@/components/mobile-menu"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-
+import TrainerSections from "@/components/trainer-section";
+import PackageComponent from "@/components/package-section";
 const schema = yup.object().shape({
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
@@ -470,63 +471,69 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Packages Section */}
-        <section className="py-12 md:py-16 bg-slate-50" id="packages">
-          <div className="container">
+        <section className="py-8 md:py-12 bg-slate-50" id="packages">
+      <div className="container">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Private Training Packages</h2>
+          <p className="text-muted-foreground text-base md:text-lg mb-8">
+            Hour-long private lessons with a trainer. Choose the package that fits your goals and schedule.
+          </p>
+
+          {/* Centered Package Display */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-8">
+              {[
+                { hours: 4, price: "$325" },
+                { hours: 6, price: "$425" },
+                { hours: 8, price: "$525" },
+              ].map((pkg, index) => (
+                <motion.div
+                  key={pkg.hours}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="text-center px-6 py-4 border-r border-gray-200 last:border-r-0 sm:border-r sm:last:border-r-0 border-b sm:border-b-0 last:border-b-0"
+                >
+                  <div className="text-lg font-semibold text-red-600 mb-2">{pkg.hours} Hours</div>
+                  <div className="text-2xl font-bold text-gray-900">{pkg.price}</div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Single Centered Button */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center max-w-2xl mx-auto"
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex justify-center"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-                Private Training Packages
-              </h2>
-              <p className="text-muted-foreground text-base md:text-lg mb-6">
-                Hour-long private lessons with a trainer. Choose the package that fits your goals and schedule.
-              </p>
-
-              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
-                {[
-                  { hours: 4, price: "$325" },
-                  { hours: 6, price: "$425" },
-                  { hours: 8, price: "$525" },
-                ].map((pkg, index) => (
-                  <motion.div
-                    key={pkg.hours}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.2 }}
-                    className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-                  >
-                    <h3 className="text-xl font-semibold mb-2 text-red-600">
-                      Package of {pkg.hours} Hours
-                    </h3>
-                    <p className="text-gray-700 text-lg font-medium mb-4">
-                      {pkg.price}
-                    </p>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        size="sm"
-                        className="w-full bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() =>
-                          window.open(
-                            'https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0',
-                            '_blank'
-                          )
-                        }
-                      >
-                        Book Now
-                      </Button>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-12 py-3 text-lg font-semibold"
+                  onClick={() =>
+                    window.open(
+                      "https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0",
+                      "_blank",
+                    )
+                  }
+                >
+                  Book Training Package
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
-        </section>
+        </motion.div>
+      </div>
+    </section>
 
         {/* Testimonials */}
         <section id="testimonials" className="py-12 md:py-16 lg:py-24">
@@ -776,7 +783,9 @@ export default function Home() {
             }}
           />
         </section>
-
+<section>
+  <TrainerSections/>
+</section>
         {/* Contact */}
         <section id="contact" className="py-12 md:py-16 lg:py-24">
           <div className="container">
@@ -850,7 +859,7 @@ export default function Home() {
                   <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
                     <Link
                       href="https://instagram.com"
-                      className="bg-red-100 p-2 rounded-full text-red-600 hover:bg-red-200 transition-colors"
+                      className=" p-2 rounded-full text-red-600  transition-colors"
                     >
                       <Instagram className="h-4 w-4 md:h-5 md:w-5" />
                       <span className="sr-only">Instagram</span>
@@ -859,7 +868,7 @@ export default function Home() {
                   <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
                     <Link
                       href="https://twitter.com"
-                      className="bg-red-100 p-2 rounded-full text-red-600 hover:bg-red-200 transition-colors"
+                      className=" p-2 rounded-full text-red-600  transition-colors"
                     >
                       <Twitter className="h-4 w-4 md:h-5 md:w-5" />
                       <span className="sr-only">Twitter</span>
@@ -868,7 +877,7 @@ export default function Home() {
                   <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
                     <Link
                       href="https://facebook.com"
-                      className="bg-red-100 p-2 rounded-full text-red-600 hover:bg-red-200 transition-colors"
+                      className=" p-2 rounded-full text-red-600  transition-colors"
                     >
                       <Facebook className="h-4 w-4 md:h-5 md:w-5" />
                       <span className="sr-only">Facebook</span>
@@ -987,6 +996,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+       
+          <PackageComponent/>
+        
       </main>
 
       {/* Footer */}

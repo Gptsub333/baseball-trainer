@@ -12,7 +12,14 @@ interface MobileMenuProps {
 
 export function MobileMenu({ items }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
-
+const handleClick = () => {
+    if (typeof window !== 'undefined') {
+      window.open(
+        'https://app.repcard.com/InSaenzTraining',
+        '_blank'
+      );
+    }
+  };
   const toggleMenu = () => {
     setIsOpen(!isOpen)
   }
@@ -66,7 +73,7 @@ export function MobileMenu({ items }: MobileMenuProps) {
                   transition={{ duration: 0.3, delay: 0.1 * items.length }}
                   className="pt-4"
                 >
-                  <Button onClick={closeMenu} size="lg">
+                  <Button onClick={handleClick} size="lg">
                     Book a Session
                   </Button>
                 </motion.div>
