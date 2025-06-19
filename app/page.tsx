@@ -43,6 +43,14 @@ export default function Home() {
       );
     }
   };
+  const handleClickhero = () => {
+    if (typeof window !== 'undefined') {
+      window.open(
+        'https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0',
+        '_blank'
+      );
+    }
+  };
 
   const {
     register,
@@ -96,7 +104,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               className="hidden md:block"
             >
-              <Button onClick={handleClick}>Sign up for team clinic
+              <Button onClick={handleClick}>Sign up for Online Database
               </Button>
             </motion.div>
             <MobileMenu items={navItems} />
@@ -147,11 +155,11 @@ export default function Home() {
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                   <Button
-                    onClick={handleClick}
+                    onClick={handleClickhero}
                     size="lg"
                     className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                   >
-                    Sign up for team clinic
+                   Sign up for Online Database
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
@@ -285,7 +293,7 @@ export default function Home() {
 
             <Tabs defaultValue="pitching" className="max-w-4xl mx-auto">
               <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-6 md:mb-8 w-full">
-                {["pitching", "hitting", "fielding", "complete"].map((tab, i) => (
+                {["pitching", "hitting", "fielding / catching", "complete"].map((tab, i) => (
                   <motion.div
                     key={tab}
                     initial={{ opacity: 0, y: 10 }}
@@ -307,7 +315,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/pitching.jpg" alt="Pitching training" fill className="object-cover" />
+                    <Image src="/pitch.jpg" alt="Pitching training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Pitching Mastery</h3>
@@ -383,7 +391,7 @@ export default function Home() {
                   </div>
                 </motion.div>
               </TabsContent>
-              <TabsContent value="fielding" className="space-y-4">
+              <TabsContent value="fielding / catching" className="space-y-4">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -391,7 +399,7 @@ export default function Home() {
                   className="grid md:grid-cols-2 gap-6 md:gap-8"
                 >
                   <div className="relative h-[200px] sm:h-[250px] md:h-[300px] rounded-lg overflow-hidden">
-                    <Image src="/feilding.jpg" alt="Fielding training" fill className="object-cover" />
+                    <Image src="/field.jpeg" alt="Fielding training" fill className="object-cover" />
                   </div>
                   <div className="space-y-3 md:space-y-4">
                     <h3 className="text-xl md:text-2xl font-bold">Elite Fielding</h3>
@@ -470,169 +478,73 @@ export default function Home() {
             </Tabs>
           </div>
         </section>
-
+<PackageComponent/>
         <section className="py-8 md:py-12 bg-slate-50" id="packages">
-      <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl mx-auto"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Private Training Packages</h2>
-          <p className="text-muted-foreground text-base md:text-lg mb-8">
-            Hour-long private lessons with a trainer. Choose the package that fits your goals and schedule.
-          </p>
-
-          {/* Centered Package Display */}
-          <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-8">
-              {[
-                { hours: 4, price: "$325" },
-                { hours: 6, price: "$425" },
-                { hours: 8, price: "$525" },
-              ].map((pkg, index) => (
-                <motion.div
-                  key={pkg.hours}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="text-center px-6 py-4 border-r border-gray-200 last:border-r-0 sm:border-r sm:last:border-r-0 border-b sm:border-b-0 last:border-b-0"
-                >
-                  <div className="text-lg font-semibold text-red-600 mb-2">{pkg.hours} Hours</div>
-                  <div className="text-2xl font-bold text-gray-900">{pkg.price}</div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Single Centered Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex justify-center"
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-12 py-3 text-lg font-semibold"
-                  onClick={() =>
-                    window.open(
-                      "https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0",
-                      "_blank",
-                    )
-                  }
-                >
-                  Book Training Package
-                </Button>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-
-        {/* Testimonials */}
-        <section id="testimonials" className="py-12 md:py-16 lg:py-24">
           <div className="container">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-center max-w-3xl mx-auto mb-8 md:mb-16"
+              className="text-center max-w-4xl mx-auto"
             >
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 md:mb-4">Success Stories</h2>
-              <p className="text-sm md:text-base text-muted-foreground">
-                Hear from players who have transformed their game through our training programs.
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Private Training Packages</h2>
+              <p className="text-muted-foreground text-base md:text-lg mb-8">
+                Hour-long private lessons with a trainer. Choose the package that fits your goals and schedule.
               </p>
+
+              {/* Centered Package Display */}
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-8">
+                  {[
+                    { hours: 4, price: "$325" },
+                    { hours: 6, price: "$425" },
+                    { hours: 8, price: "$525" },
+                  ].map((pkg, index) => (
+                    <motion.div
+                      key={pkg.hours}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="text-center px-6 py-4 border-r border-gray-200 last:border-r-0 sm:border-r sm:last:border-r-0 border-b sm:border-b-0 last:border-b-0"
+                    >
+                      <div className="text-lg font-semibold text-red-600 mb-2">{pkg.hours} Hours</div>
+                      <div className="text-2xl font-bold text-gray-900">{pkg.price}</div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Single Centered Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="flex justify-center"
+                >
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-12 py-3 text-lg font-semibold"
+                      onClick={() =>
+                        window.open(
+                          "https://www.skool.com/stayhotbaseballnetwork/about?ref=e7a222800ed449049236361ae809cca0",
+                          "_blank",
+                        )
+                      }
+                    >
+                      Book Training Package
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </div>
             </motion.div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-              >
-                <Card>
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
-                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
-                        <Image src="/placeholder-6ed76.png" alt="Player testimonial" fill className="object-cover" />
-                      </div>
-                      <div className="space-y-1 md:space-y-2">
-                        <p className="text-sm md:text-base text-muted-foreground italic">
-                          "After just 3 months of training, my pitching velocity increased by 7 mph and my control
-                          improved dramatically. Now I'm the starting pitcher for my college team."
-                        </p>
-                        <h4 className="font-semibold text-sm md:text-base">Mike Johnson</h4>
-                        <p className="text-xs md:text-sm text-muted-foreground">College Pitcher</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-              >
-                <Card>
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
-                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
-                        <Image src="/placeholder-mmy51.png" alt="Player testimonial" fill className="object-cover" />
-                      </div>
-                      <div className="space-y-1 md:space-y-2">
-                        <p className="text-sm md:text-base text-muted-foreground italic">
-                          "The hitting program completely transformed my approach at the plate. My batting average went
-                          from .250 to .380 in one season. Best investment I've made."
-                        </p>
-                        <h4 className="font-semibold text-sm md:text-base">Alex Rodriguez</h4>
-                        <p className="text-xs md:text-sm text-muted-foreground">High School Outfielder</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                className="sm:col-span-2 lg:col-span-1"
-              >
-                <Card>
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
-                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
-                        <Image src="/placeholder-jkqer.png" alt="Coach testimonial" fill className="object-cover" />
-                      </div>
-                      <div className="space-y-1 md:space-y-2">
-                        <p className="text-sm md:text-base text-muted-foreground italic">
-                          "As a coach, I've sent several of my players for specialized training. The improvement in
-                          their skills and confidence is remarkable. Highly recommended."
-                        </p>
-                        <h4 className="font-semibold text-sm md:text-base">Coach Williams</h4>
-                        <p className="text-xs md:text-sm text-muted-foreground">Youth Team Coach</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
           </div>
         </section>
+
+        {/* Testimonials */}
+        
 
         {/* Gallery */}
         <section id="gallery" className="py-12 md:py-16 lg:py-24 bg-slate-50">
@@ -783,9 +695,106 @@ export default function Home() {
             }}
           />
         </section>
-<section>
-  <TrainerSections/>
-</section>
+        <section>
+          <TrainerSections />
+        </section>
+        <section id="testimonials" className="py-12 md:py-16 lg:py-24">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-3xl mx-auto mb-8 md:mb-16"
+            >
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 md:mb-4">Success Stories</h2>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Hear from parents and players whose baseball journey has been transformed through Kevin’s training.
+              </p>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              >
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
+                        <Image src="/placeholder-6ed76.png" alt="Parent testimonial" fill className="object-cover" />
+                      </div>
+                      <div className="space-y-1 md:space-y-2">
+                        <p className="text-sm md:text-base text-muted-foreground italic">
+                          "Kevin tailored the training to my son's skill level, skipping beginner steps and focusing on refining
+                          his catching. We're excited for our upcoming hitting sessions!"
+                        </p>
+                        <h4 className="font-semibold text-sm md:text-base">Michael Simmons</h4>
+                        <p className="text-xs md:text-sm text-muted-foreground">Parent</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              >
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
+                        <Image src="/placeholder-mmy51.png" alt="Parent testimonial" fill className="object-cover" />
+                      </div>
+                      <div className="space-y-1 md:space-y-2">
+                        <p className="text-sm md:text-base text-muted-foreground italic">
+                          "Kevin is the most dedicated and genuine coach we’ve met. His passion shows in every session, and my
+                          son’s progress has been incredible. We’re always excited for the next lesson!"
+                        </p>
+                        <h4 className="font-semibold text-sm md:text-base">Josh Weaver</h4>
+                        <p className="text-xs md:text-sm text-muted-foreground">Parent</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                className="sm:col-span-2 lg:col-span-1"
+              >
+                <Card>
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+                      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden">
+                        <Image src="/placeholder-jkqer.png" alt="Player testimonial" fill className="object-cover" />
+                      </div>
+                      <div className="space-y-1 md:space-y-2">
+                        <p className="text-sm md:text-base text-muted-foreground italic">
+                          "I love training with Kevin! My fielding, pitching, and hitting have improved so much. His drills and
+                          real-world tips make learning fun and effective."
+                        </p>
+                        <h4 className="font-semibold text-sm md:text-base">Zach Tristan</h4>
+                        <p className="text-xs md:text-sm text-muted-foreground">Youth Player</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+          </div>
+        </section>
         {/* Contact */}
         <section id="contact" className="py-12 md:py-16 lg:py-24">
           <div className="container">
@@ -996,9 +1005,9 @@ export default function Home() {
             </div>
           </div>
         </section>
-       
-          <PackageComponent/>
-        
+
+     
+
       </main>
 
       {/* Footer */}
