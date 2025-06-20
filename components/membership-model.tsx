@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
 import { useState } from "react"
 
@@ -20,6 +21,7 @@ export default function MembershipModal({ isOpen, onClose }: MembershipModalProp
     memberName: "",
     memberSignature: "",
     date: "",
+    selectedPlan: "",
     agreed: false,
   })
 
@@ -31,17 +33,43 @@ export default function MembershipModal({ isOpen, onClose }: MembershipModalProp
       alert("Please check the agreement checkbox to proceed.")
       return
     }
-    if (!formData.memberName || !formData.memberSignature) {
+    if (!formData.memberName || !formData.memberSignature || !formData.date || !formData.selectedPlan) {
       alert("Please fill in all required fields.")
       return
     }
 
     setIsSubmitting(true)
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    alert("Membership agreement submitted successfully! We will contact you soon.")
-    setIsSubmitting(false)
-    onClose()
+    
+    try {
+      const response = await fetch('/api/membership', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        alert("Membership agreement submitted successfully! We will contact you soon.")
+        setFormData({
+          memberName: "",
+          memberSignature: "",
+          date: "",
+          selectedPlan: "",
+          agreed: false,
+        })
+        onClose()
+      } else {
+        alert(`Error: ${result.error || 'Failed to submit membership agreement'}`)
+      }
+    } catch (error) {
+      console.error('Submission error:', error)
+      alert("An error occurred while submitting the form. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -200,6 +228,25 @@ export default function MembershipModal({ isOpen, onClose }: MembershipModalProp
                   onChange={(e) => handleInputChange("date", e.target.value)}
                   className="mt-1"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="selectedPlan" className="text-sm font-medium">
+                  Select Membership Plan *
+                </Label>
+                <Select 
+                  value={formData.selectedPlan} 
+                  onValueChange={(value) => handleInputChange("selectedPlan", value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Choose your plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="basic">$125/month - (2) field days per month, 3 hours each</SelectItem>
+                    <SelectItem value="standard">$175/month - 1 practice per week + 2 field days per month</SelectItem>
+                    <SelectItem value="premium">$225/month - 2 practices per week + 2 field days per month</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
