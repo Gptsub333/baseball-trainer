@@ -3,8 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
-import { Instagram, Twitter, Facebook, ChevronRight, Calendar, User, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Instagram, Twitter, Facebook, ChevronRight, Calendar, User, MapPin, AlertCircle, CheckCircle, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
@@ -17,6 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TrainerSections from "@/components/trainer-section";
 import PackageComponent from "@/components/package-section";
+import { useState } from "react";
 const schema = yup.object().shape({
   firstName: yup.string().required('First name is required'),
   lastName: yup.string().required('Last name is required'),
@@ -24,7 +24,79 @@ const schema = yup.object().shape({
   subject: yup.string().required('Subject is required'),
   message: yup.string().required('Message is required'),
 });
+interface FormData {
+  firstName: string
+  lastName: string
+  email: string
+  subject: string
+  message: string
+}
 
+interface FormErrors {
+  firstName?: string
+  lastName?: string
+  email?: string
+  subject?: string
+  message?: string
+}
+
+interface ApiResponse {
+  message?: string
+  error?: string
+  emailInfo?: {
+    messageId: string
+    accepted: string[]
+    rejected: string[]
+  }
+}
+
+type SubmitStatus = 'success' | 'error' | null
+
+// Form validation function (add this outside your component)
+const validateForm = (data: FormData): FormErrors => {
+  const errors: FormErrors = {}
+  
+  if (!data.firstName.trim()) {
+    errors.firstName = 'First name is required'
+  }
+  
+  if (!data.lastName.trim()) {
+    errors.lastName = 'Last name is required'
+  }
+  
+  if (!data.email.trim()) {
+    errors.email = 'Email is required'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.email = 'Please enter a valid email address'
+  }
+  
+  if (!data.subject.trim()) {
+    errors.subject = 'Subject is required'
+  }
+  
+  if (!data.message.trim()) {
+    errors.message = 'Message is required'
+  } else if (data.message.trim().length < 10) {
+    errors.message = 'Message must be at least 10 characters long'
+  }
+  
+  return errors
+}
+
+// Button component (add this outside your component)
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode
+  className?: string
+}
+
+const Button: React.FC<ButtonProps> = ({ children, className = '', ...props }) => (
+  <button 
+    className={`bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors ${className}`}
+    {...props}
+  >
+    {children}
+  </button>
+)
 export default function Home() {
   const navItems = [
     { title: "About", href: "#about" },
@@ -52,22 +124,104 @@ export default function Home() {
     }
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
 
+const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+  
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null)
 
-  const onSubmit = (data: any) => {
-    console.log('Form submitted:', data);
-    reset();
-    alert('Message sent successfully!');
-  };
+  // ADD THESE FUNCTIONS INSIDE YOUR Home() COMPONENT
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
+  }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    console.log('Form submission started', formData) // Debug log
+    
+    // Validate form
+    const validationErrors = validateForm(formData)
+    if (Object.keys(validationErrors).length > 0) {
+      console.log('Validation errors:', validationErrors) // Debug log
+      setErrors(validationErrors)
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitStatus(null)
+    setErrors({}) // Clear any previous errors
+
+    try {
+      console.log('Sending request to /api/contact') // Debug log
+      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      console.log('Response status:', response.status) // Debug log
+      
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.indexOf('application/json') !== -1) {
+        const result: ApiResponse = await response.json()
+        console.log('Response data:', result) // Debug log
+
+        if (response.ok) {
+          setSubmitStatus('success')
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            subject: '',
+            message: ''
+          })
+          setErrors({})
+          
+          // Auto-hide success message after 5 seconds
+          setTimeout(() => {
+            setSubmitStatus(null)
+          }, 5000)
+        } else {
+          setSubmitStatus('error')
+          console.error('API Error:', result.error)
+        }
+      } else {
+        // Non-JSON response, likely an error
+        const textResponse = await response.text()
+        console.error('Non-JSON response:', textResponse)
+        setSubmitStatus('error')
+      }
+    } catch (error) {
+      setSubmitStatus('error')
+      console.error('Network/Parse error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
   return (
     <div className="flex min-h-screen flex-col">
       {/* Navigation */}
@@ -156,7 +310,7 @@ export default function Home() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                   <Button
                     onClick={handleClickhero}
-                    size="lg"
+                   
                     className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                   >
                    Sign up for Online Database
@@ -165,8 +319,7 @@ export default function Home() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                   <Button
                     onClick={() => router.push('/#training')}
-                    size="lg"
-                    variant="outline"
+                    
                     className="text-black border-white w-full sm:w-auto"
                   >
                     View Training Programs
@@ -525,7 +678,7 @@ export default function Home() {
                 >
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button
-                      size="lg"
+                      
                       className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-12 py-3 text-lg font-semibold"
                       onClick={() =>
                         window.open(
@@ -658,7 +811,7 @@ export default function Home() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   onClick={handleClick}
-                  size="lg"
+                 
                   className="bg-white text-red-600 hover:bg-gray-100 w-full sm:w-auto"
                 >
                   Sign up for team clinic
@@ -796,218 +949,308 @@ export default function Home() {
           </div>
         </section>
         {/* Contact */}
-        <section id="contact" className="py-12 md:py-16 lg:py-24">
-          <div className="container">
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 md:mb-4">Get in Touch</h2>
-                <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">
-                  Have questions about our training programs? Contact us for more information.
-                </p>
+          <section id="contact" className="py-12 md:py-16 lg:py-24 bg-white">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+            {/* Left side - contact info (unchanged) */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 md:mb-4">Get in Touch</h2>
+              <p className="text-sm md:text-base text-gray-600 mb-6 md:mb-8">
+                Have questions about our training programs? Contact us for more information.
+              </p>
 
-                <div className="space-y-4">
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="bg-red-100 p-2 md:p-3 rounded-full">
+                    <User className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm md:text-base">Name</h3>
+                    <p className="text-xs md:text-sm text-gray-600">Kevin Saenz</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="bg-red-100 p-2 md:p-3 rounded-full">
+                    <MapPin className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm md:text-base">Training Facility</h3>
+                    <p className="text-xs md:text-sm text-gray-600">
+                      30803 Ruth ct, Tracy CA
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="bg-red-100 p-2 md:p-3 rounded-full">
+                    <Calendar className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm md:text-base">Training Hours</h3>
+                    <p className="text-xs md:text-sm text-gray-600">Monday - Friday: 3PM - 9PM</p>
+                    <p className="text-xs md:text-sm text-gray-600">Saturday: 9AM - 5PM</p>
+                    <p className="text-xs md:text-sm text-gray-600">Sunday: By appointment only</p>
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="flex gap-4 mt-6 md:mt-8">
+                <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
+                  <Link
+                    href="https://instagram.com"
+                    className="p-2 rounded-full text-red-600 transition-colors hover:bg-red-50 inline-block"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Instagram className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="sr-only">Instagram</span>
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
+                  <Link
+                    href="https://twitter.com"
+                    className="p-2 rounded-full text-red-600 transition-colors hover:bg-red-50 inline-block"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Twitter className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="sr-only">Twitter</span>
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
+                  <Link
+                    href="https://facebook.com"
+                    className="p-2 rounded-full text-red-600 transition-colors hover:bg-red-50 inline-block"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Facebook className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="sr-only">Facebook</span>
+                  </Link>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Right side - contact form (UPDATED) */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-slate-50 p-4 md:p-8 rounded-lg"
+            >
+              <h3 className="text-lg md:text-xl font-bold mb-4">Send us a Message</h3>
+              
+              {/* Success Message */}
+              {submitStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3"
+                >
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <p className="text-green-800 text-sm">
+                    Thank you! Your message has been sent successfully. We'll get back to you soon.
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Error Message */}
+              {submitStatus === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md flex items-center gap-3"
+                >
+                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <p className="text-red-800 text-sm">
+                    Sorry, there was an error sending your message. Please try again later.
+                  </p>
+                </motion.div>
+              )}
+
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className="flex items-center gap-4"
+                    className="space-y-2"
                   >
-                    <div className="bg-red-100 p-2 md:p-3 rounded-full">
-                      <User className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm md:text-base">Name</h3>
-                      <p className="text-xs md:text-sm text-muted-foreground">Kevin Saenz</p>
-                    </div>
+                    <label htmlFor="firstName" className="text-xs md:text-sm font-medium">
+                      First Name
+                    </label>
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      required
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className={`w-full rounded-md border bg-white px-3 py-2 text-xs md:text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-transparent ${
+                        errors.firstName ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                      placeholder="John"
+                    />
+                    {errors.firstName && (
+                      <p className="text-xs text-red-600">{errors.firstName}</p>
+                    )}
                   </motion.div>
-
+                  
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="flex items-center gap-4"
-                  >
-                    <div className="bg-red-100 p-2 md:p-3 rounded-full">
-                      <MapPin className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm md:text-base">Training Facility</h3>
-                      <p className="text-xs md:text-sm text-muted-foreground">
-                        30803 Ruth ct, Tracy CA
-                      </p>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="flex items-center gap-4"
-                  >
-                    <div className="bg-red-100 p-2 md:p-3 rounded-full">
-                      <Calendar className="h-5 w-5 md:h-6 md:w-6 text-red-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm md:text-base">Training Hours</h3>
-                      <p className="text-xs md:text-sm text-muted-foreground">Monday - Friday: 3PM - 9PM</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">Saturday: 9AM - 5PM</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">Sunday: By appointment only</p>
-                    </div>
-                  </motion.div>
-                </div>
-
-                <div className="flex gap-4 mt-6 md:mt-8">
-                  <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
-                    <Link
-                      href="https://instagram.com"
-                      className=" p-2 rounded-full text-red-600  transition-colors"
-                    >
-                      <Instagram className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="sr-only">Instagram</span>
-                    </Link>
-                  </motion.div>
-                  <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
-                    <Link
-                      href="https://twitter.com"
-                      className=" p-2 rounded-full text-red-600  transition-colors"
-                    >
-                      <Twitter className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="sr-only">Twitter</span>
-                    </Link>
-                  </motion.div>
-                  <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }}>
-                    <Link
-                      href="https://facebook.com"
-                      className=" p-2 rounded-full text-red-600  transition-colors"
-                    >
-                      <Facebook className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="sr-only">Facebook</span>
-                    </Link>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="bg-slate-50 p-4 md:p-8 rounded-lg"
-              >
-                <h3 className="text-lg md:text-xl font-bold mb-4">Send us a Message</h3>
-                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      className="space-y-2"
-                    >
-                      <label htmlFor="first-name" className="text-xs md:text-sm font-medium">
-                        First Name
-                      </label>
-                      <input
-                        {...register('firstName')}
-                        id="first-name"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        placeholder="John"
-                      />
-                      <p className="text-red-500 text-sm">{errors.firstName?.message}</p>
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      className="space-y-2"
-                    >
-                      <label htmlFor="last-name" className="text-xs md:text-sm font-medium">
-                        Last Name
-                      </label>
-                      <input
-                        {...register('lastName')}
-                        id="last-name"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        placeholder="Doe"
-                      />
-                      <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
-                    </motion.div>
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
                     className="space-y-2"
                   >
-                    <label htmlFor="email" className="text-xs md:text-sm font-medium">
-                      Email
+                    <label htmlFor="lastName" className="text-xs md:text-sm font-medium">
+                      Last Name
                     </label>
                     <input
-                      id="email"
-                      type="email"
-                      {...register('email')}
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      placeholder="john.doe@example.com"
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className={`w-full rounded-md border bg-white px-3 py-2 text-xs md:text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-transparent ${
+                        errors.lastName ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                      placeholder="Doe"
                     />
-                    <p className="text-red-500 text-sm">{errors.email?.message}</p>
+                    {errors.lastName && (
+                      <p className="text-xs text-red-600">{errors.lastName}</p>
+                    )}
                   </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="space-y-2"
+                </div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="space-y-2"
+                >
+                  <label htmlFor="email" className="text-xs md:text-sm font-medium">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={`w-full rounded-md border bg-white px-3 py-2 text-xs md:text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-transparent ${
+                      errors.email ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="john.doe@example.com"
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-600">{errors.email}</p>
+                  )}
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="space-y-2"
+                >
+                  <label htmlFor="subject" className="text-xs md:text-sm font-medium">
+                    Subject
+                  </label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    required
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    className={`w-full rounded-md border bg-white px-3 py-2 text-xs md:text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-transparent ${
+                      errors.subject ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Training Inquiry"
+                  />
+                  {errors.subject && (
+                    <p className="text-xs text-red-600">{errors.subject}</p>
+                  )}
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="space-y-2"
+                >
+                  <label htmlFor="message" className="text-xs md:text-sm font-medium">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className={`w-full min-h-[100px] md:min-h-[120px] rounded-md border bg-white px-3 py-2 text-xs md:text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-transparent resize-vertical ${
+                      errors.message ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="I'm interested in learning more about your training programs..."
+                  />
+                  {errors.message && (
+                    <p className="text-xs text-red-600">{errors.message}</p>
+                  )}
+                </motion.div>
+                
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button 
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
                   >
-                    <label htmlFor="subject" className="text-xs md:text-sm font-medium">
-                      Subject
-                    </label>
-                    <input
-                      id="subject"
-                      {...register('subject')}
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      placeholder="Training Inquiry"
-                    />
-                    <p className="text-red-500 text-sm">{errors.subject?.message}</p>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="space-y-2"
-                  >
-                    <label htmlFor="message" className="text-xs md:text-sm font-medium">
-                      Message
-                    </label>
-                    <textarea
-                      id="message"
-                      {...register('message')}
-                      className="w-full min-h-[100px] md:min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-xs md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      placeholder="I'm interested in learning more about your training programs..."
-                    />
-                    <p className="text-red-500 text-sm">{errors.message?.message}</p>
-                  </motion.div>
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                    <Button type="submit" className="w-full">Send Message</Button>
-                  </motion.div>
-                </form>
-              </motion.div>
-            </div>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Sending Message...
+                      </>
+                    ) : (
+                      'Send Message'
+                    )}
+                  </Button>
+                </motion.div>
+              </form>
+            </motion.div>
           </div>
-        </section>
-
-     
-
+        </div>
+      </section>
       </main>
 
       {/* Footer */}
